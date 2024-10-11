@@ -95,6 +95,7 @@ async function getSelector(url) {
   // @ts-ignore
   const browser = await puppeteer.launch({
     headless: true,
+    args: ["--no-sandbox"]
   });
 
   // Open a new page
