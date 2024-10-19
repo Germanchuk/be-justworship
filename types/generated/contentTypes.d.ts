@@ -897,28 +897,24 @@ export interface ApiSongSong extends Schema.CollectionType {
   attributes: {
     content: Attribute.JSON;
     name: Attribute.String;
-    bpm: Attribute.Integer;
+    bpm: Attribute.Integer & Attribute.DefaultTo<0>;
     key: Attribute.Enumeration<
       [
-        'Ab',
         'A',
         'Asharp',
-        'Bb',
-        'H',
+        'B',
         'C',
         'Csharp',
-        'Db',
         'D',
         'Dsharp',
-        'Eb',
         'E',
         'F',
         'Fsharp',
-        'Gb',
         'G',
         'Gsharp'
       ]
-    >;
+    > &
+      Attribute.DefaultTo<'C'>;
     transposition: Attribute.Integer &
       Attribute.SetMinMax<
         {

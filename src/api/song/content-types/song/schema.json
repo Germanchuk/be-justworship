@@ -19,29 +19,26 @@
       "type": "string"
     },
     "bpm": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0
     },
     "key": {
       "type": "enumeration",
       "enum": [
-        "Ab",
         "A",
         "Asharp",
-        "Bb",
-        "H",
+        "B",
         "C",
         "Csharp",
-        "Db",
         "D",
         "Dsharp",
-        "Eb",
         "E",
         "F",
         "Fsharp",
-        "Gb",
         "G",
         "Gsharp"
-      ]
+      ],
+      "default": "C"
     },
     "transposition": {
       "type": "integer",
