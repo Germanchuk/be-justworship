@@ -37,40 +37,16 @@ async function getParsedSong(url) {
   const song = getSong();
 
   function getBlock($block) {
-    const block = {
-      content: [],
-    };
+    const lines = [];
 
     $block.contents().each((index, row) => {
       const $row = $(row);
-      //  handle the Title
-      if ($row.hasClass(BLOCK_TITLE_CLASS)) {
-        block.title = $row.text().trim();
-      }
-      //  handle the Chords
-      if ($row.hasClass(BLOCK_CHORDS_CLASS) && $row.contents().length) {
-        block.content.push({
-          type: ItemType.CHORD,
-          content: $row.text().trim(),
-        });
-      }
-      //  handle the Text
-      if ($row.hasClass(BLOCK_TEXT_CLASS)) {
-        block.content.push({
-          type: ItemType.TEXT,
-          content: $row.text().trim(),
-        });
-      }
-      // handle empty line
-      if ($row.hasClass(BLOCK_CHORDS_CLASS) && !$row.contents().length) {
-        block.content.push({
-          type: ItemType.EMPTY,
-          content: [],
-        });
+      if ($row.contents().length) {
+        lines.push($row.text().trim());
       }
     });
 
-    return block;
+    return { content: lines.join("\n") };
   }
 
   function getSong() {
@@ -95,6 +71,7 @@ async function getSelector(url) {
   // @ts-ignore
   const browser = await puppeteer.launch({
     headless: true,
+    args: ["--no-sandbox"]
   });
 
   // Open a new page

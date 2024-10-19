@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bands",
+  "info": {
+    "singularName": "band",
+    "pluralName": "bands",
+    "displayName": "Band",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "church": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::church.church",
+      "inversedBy": "bands"
+    }
+  }
+}
