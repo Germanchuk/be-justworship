@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "churches",
+  "info": {
+    "singularName": "church",
+    "pluralName": "churches",
+    "displayName": "Church",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "admins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "church"
+    },
+    "bands": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::band.band",
+      "mappedBy": "church"
+    }
+  }
+}
