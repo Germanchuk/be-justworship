@@ -17,6 +17,36 @@
     },
     "name": {
       "type": "string"
+    },
+    "bpm": {
+      "type": "integer"
+    },
+    "key": {
+      "type": "enumeration",
+      "enum": [
+        "Ab",
+        "A",
+        "Asharp",
+        "Bb",
+        "H",
+        "C",
+        "Csharp",
+        "Db",
+        "D",
+        "Dsharp",
+        "Eb",
+        "E",
+        "F",
+        "Fsharp",
+        "Gb",
+        "G",
+        "Gsharp"
+      ]
+    },
+    "transposition": {
+      "type": "integer",
+      "default": 0,
+      "max": 12
     }
   }
 }

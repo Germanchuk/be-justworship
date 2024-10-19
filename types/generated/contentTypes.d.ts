@@ -825,6 +825,36 @@ export interface ApiSongSong extends Schema.CollectionType {
   attributes: {
     content: Attribute.JSON;
     name: Attribute.String;
+    bpm: Attribute.Integer;
+    key: Attribute.Enumeration<
+      [
+        'Ab',
+        'A',
+        'Asharp',
+        'Bb',
+        'H',
+        'C',
+        'Csharp',
+        'Db',
+        'D',
+        'Dsharp',
+        'Eb',
+        'E',
+        'F',
+        'Fsharp',
+        'Gb',
+        'G',
+        'Gsharp'
+      ]
+    >;
+    transposition: Attribute.Integer &
+      Attribute.SetMinMax<
+        {
+          max: 12;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
