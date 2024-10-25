@@ -20,6 +20,12 @@
       "relation": "manyToOne",
       "target": "api::church.church",
       "inversedBy": "bands"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "bands"
     }
   }
 }
