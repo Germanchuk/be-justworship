@@ -780,6 +780,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToMany',
       'api::band.band'
     >;
+    currentBand: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::band.band'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

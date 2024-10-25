@@ -76,6 +76,11 @@
       "relation": "manyToMany",
       "target": "api::band.band",
       "inversedBy": "users"
+    },
+    "currentBand": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::band.band"
     }
   }
 }
