@@ -60,10 +60,13 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
     // Collect all lists from user's bands
     const bandIds = user.bands.map(band => band.id); // Extract band IDs
 
+    ctx.query.filters = {
+        ...(ctx.query.filters || {}),
+        band: { $in: bandIds }
+      };
+  
     // Query the List content type for all lists related to these band IDs
-    const lists = await strapi.entityService.findMany('api::list.list', {
-      filters: { band: { $in: bandIds } },  // Fetch lists where band is in the user's bands
-    });
+    const lists = await strapi.entityService.findMany('api::list.list', ctx.query);
 
     return { data: lists };
   },
