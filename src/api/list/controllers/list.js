@@ -38,4 +38,33 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
 
     return { data, meta };
   },
+  // Custom action to gather lists from user's bands
+  async findMyLists(ctx) {
+    // Get the authenticated user's ID
+    const userId = ctx.state.user?.id;
+
+    if (!userId) {
+      return ctx.unauthorized('You must be authenticated to view the lists.');
+    }
+
+    // Fetch the user with their associated bands
+    const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId, {
+      populate: ['bands'],  // Populate the 'bands' relation
+    });
+
+    // Check if the user has bands
+    if (!user.bands || user.bands.length === 0) {
+      return ctx.badRequest('User is not associated with any bands.');
+    }
+
+    // Collect all lists from user's bands
+    const bandIds = user.bands.map(band => band.id); // Extract band IDs
+
+    // Query the List content type for all lists related to these band IDs
+    const lists = await strapi.entityService.findMany('api::list.list', {
+      filters: { band: { $in: bandIds } },  // Fetch lists where band is in the user's bands
+    });
+
+    return { data: lists };
+  },
 }));
