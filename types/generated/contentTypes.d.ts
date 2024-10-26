@@ -362,6 +362,152 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
+export interface ApiBandBand extends Schema.CollectionType {
+  collectionName: 'bands';
+  info: {
+    singularName: 'band';
+    pluralName: 'bands';
+    displayName: 'Band';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String;
+    church: Attribute.Relation<
+      'api::band.band',
+      'manyToOne',
+      'api::church.church'
+    >;
+    users: Attribute.Relation<
+      'api::band.band',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    lists: Attribute.Relation<'api::band.band', 'oneToMany', 'api::list.list'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiChurchChurch extends Schema.CollectionType {
+  collectionName: 'churches';
+  info: {
+    singularName: 'church';
+    pluralName: 'churches';
+    displayName: 'Church';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String;
+    admins: Attribute.Relation<
+      'api::church.church',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    bands: Attribute.Relation<
+      'api::church.church',
+      'oneToMany',
+      'api::band.band'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::church.church',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::church.church',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiListList extends Schema.CollectionType {
+  collectionName: 'lists';
+  info: {
+    singularName: 'list';
+    pluralName: 'lists';
+    displayName: 'List';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    date: Attribute.Date;
+    songs: Attribute.Relation<'api::list.list', 'oneToMany', 'api::song.song'>;
+    band: Attribute.Relation<'api::list.list', 'manyToOne', 'api::band.band'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSongSong extends Schema.CollectionType {
+  collectionName: 'songs';
+  info: {
+    singularName: 'song';
+    pluralName: 'songs';
+    displayName: 'Song';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    content: Attribute.JSON;
+    name: Attribute.String;
+    bpm: Attribute.Integer & Attribute.DefaultTo<0>;
+    key: Attribute.Enumeration<
+      [
+        'A',
+        'Asharp',
+        'B',
+        'C',
+        'Csharp',
+        'D',
+        'Dsharp',
+        'E',
+        'F',
+        'Fsharp',
+        'G',
+        'Gsharp'
+      ]
+    > &
+      Attribute.DefaultTo<'C'>;
+    transposition: Attribute.Integer &
+      Attribute.SetMinMax<
+        {
+          max: 12;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -802,150 +948,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface ApiBandBand extends Schema.CollectionType {
-  collectionName: 'bands';
-  info: {
-    singularName: 'band';
-    pluralName: 'bands';
-    displayName: 'Band';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Attribute.String;
-    church: Attribute.Relation<
-      'api::band.band',
-      'manyToOne',
-      'api::church.church'
-    >;
-    users: Attribute.Relation<
-      'api::band.band',
-      'manyToMany',
-      'plugin::users-permissions.user'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-  };
-}
-
-export interface ApiChurchChurch extends Schema.CollectionType {
-  collectionName: 'churches';
-  info: {
-    singularName: 'church';
-    pluralName: 'churches';
-    displayName: 'Church';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Attribute.String;
-    admins: Attribute.Relation<
-      'api::church.church',
-      'oneToMany',
-      'plugin::users-permissions.user'
-    >;
-    bands: Attribute.Relation<
-      'api::church.church',
-      'oneToMany',
-      'api::band.band'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::church.church',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::church.church',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiListList extends Schema.CollectionType {
-  collectionName: 'lists';
-  info: {
-    singularName: 'list';
-    pluralName: 'lists';
-    displayName: 'List';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    date: Attribute.Date;
-    songs: Attribute.Relation<'api::list.list', 'oneToMany', 'api::song.song'>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-  };
-}
-
-export interface ApiSongSong extends Schema.CollectionType {
-  collectionName: 'songs';
-  info: {
-    singularName: 'song';
-    pluralName: 'songs';
-    displayName: 'Song';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    content: Attribute.JSON;
-    name: Attribute.String;
-    bpm: Attribute.Integer & Attribute.DefaultTo<0>;
-    key: Attribute.Enumeration<
-      [
-        'A',
-        'Asharp',
-        'B',
-        'C',
-        'Csharp',
-        'D',
-        'Dsharp',
-        'E',
-        'F',
-        'Fsharp',
-        'G',
-        'Gsharp'
-      ]
-    > &
-      Attribute.DefaultTo<'C'>;
-    transposition: Attribute.Integer &
-      Attribute.SetMinMax<
-        {
-          max: 12;
-        },
-        number
-      > &
-      Attribute.DefaultTo<0>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -956,6 +958,10 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
+      'api::band.band': ApiBandBand;
+      'api::church.church': ApiChurchChurch;
+      'api::list.list': ApiListList;
+      'api::song.song': ApiSongSong;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -964,10 +970,6 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'api::band.band': ApiBandBand;
-      'api::church.church': ApiChurchChurch;
-      'api::list.list': ApiListList;
-      'api::song.song': ApiSongSong;
     }
   }
 }

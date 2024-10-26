@@ -19,6 +19,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::song.song"
+    },
+    "band": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::band.band",
+      "inversedBy": "lists"
     }
   }
 }
