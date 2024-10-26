@@ -40,6 +40,12 @@ module.exports = (plugin) => {
         return ctx.badRequest('An error occurred while updating the user.', err);
       }
     };
+
+    plugin.routes['content-api'].routes.push({
+        method: "PUT",
+        path: "/users/me",
+        handler: "user.updateMe"
+    })
   
     return plugin;
   };
