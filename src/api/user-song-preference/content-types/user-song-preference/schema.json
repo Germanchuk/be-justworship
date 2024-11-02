@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_song_preferences",
+  "info": {
+    "singularName": "user-song-preference",
+    "pluralName": "user-song-preferences",
+    "displayName": "User song preference",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "song_preferences"
+    },
+    "song": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::song.song",
+      "inversedBy": "users_song_preferences"
+    },
+    "transposition": {
+      "type": "integer",
+      "default": 0,
+      "max": 11,
+      "min": 0
+    },
+    "hideChords": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLyrics": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

@@ -44,6 +44,12 @@
       "type": "integer",
       "default": 0,
       "max": 12
+    },
+    "users_song_preferences": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::user-song-preference.user-song-preference",
+      "mappedBy": "song"
     }
   }
 }

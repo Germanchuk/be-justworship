@@ -785,6 +785,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToOne',
       'api::band.band'
     >;
+    song_preferences: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::user-song-preference.user-song-preference'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -939,11 +944,67 @@ export interface ApiSongSong extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
+    users_song_preferences: Attribute.Relation<
+      'api::song.song',
+      'oneToMany',
+      'api::user-song-preference.user-song-preference'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
       Attribute.Private;
     updatedBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiUserSongPreferenceUserSongPreference
+  extends Schema.CollectionType {
+  collectionName: 'user_song_preferences';
+  info: {
+    singularName: 'user-song-preference';
+    pluralName: 'user-song-preferences';
+    displayName: 'User song preference';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    user: Attribute.Relation<
+      'api::user-song-preference.user-song-preference',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    song: Attribute.Relation<
+      'api::user-song-preference.user-song-preference',
+      'manyToOne',
+      'api::song.song'
+    >;
+    transposition: Attribute.Integer &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+          max: 11;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    hideChords: Attribute.Boolean & Attribute.DefaultTo<false>;
+    hideLyrics: Attribute.Boolean & Attribute.DefaultTo<false>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::user-song-preference.user-song-preference',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::user-song-preference.user-song-preference',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -970,6 +1031,7 @@ declare module '@strapi/types' {
       'api::church.church': ApiChurchChurch;
       'api::list.list': ApiListList;
       'api::song.song': ApiSongSong;
+      'api::user-song-preference.user-song-preference': ApiUserSongPreferenceUserSongPreference;
     }
   }
 }
