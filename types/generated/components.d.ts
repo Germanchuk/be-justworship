@@ -5,9 +5,10 @@ export interface UserPreferencesPreferences extends Schema.Component {
   info: {
     displayName: 'Preferences';
     icon: 'cog';
+    description: '';
   };
   attributes: {
-    defaultFontSize: Attribute.Integer &
+    lyricsFontSize: Attribute.Integer &
       Attribute.SetMinMax<
         {
           min: 4;
@@ -16,6 +17,18 @@ export interface UserPreferencesPreferences extends Schema.Component {
         number
       > &
       Attribute.DefaultTo<16>;
+    chordsFontSize: Attribute.Integer;
+  };
+}
+
+export interface SongSongSection extends Schema.Component {
+  collectionName: 'components_song_song_sections';
+  info: {
+    displayName: 'Song section';
+    icon: 'chartBubble';
+  };
+  attributes: {
+    content: Attribute.Text;
   };
 }
 
@@ -23,6 +36,7 @@ declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'user-preferences.preferences': UserPreferencesPreferences;
+      'song.song-section': SongSongSection;
     }
   }
 }

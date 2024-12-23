@@ -949,6 +949,7 @@ export interface ApiSongSong extends Schema.CollectionType {
       'oneToMany',
       'api::user-song-preference.user-song-preference'
     >;
+    sections: Attribute.Component<'song.song-section', true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &

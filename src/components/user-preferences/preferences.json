@@ -2,15 +2,19 @@
   "collectionName": "components_user_preferences_preferences",
   "info": {
     "displayName": "Preferences",
-    "icon": "cog"
+    "icon": "cog",
+    "description": ""
   },
   "options": {},
   "attributes": {
-    "defaultFontSize": {
+    "lyricsFontSize": {
       "type": "integer",
       "default": 16,
       "max": 64,
       "min": 4
+    },
+    "chordsFontSize": {
+      "type": "integer"
     }
   }
 }

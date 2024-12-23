@@ -50,6 +50,11 @@
       "relation": "oneToMany",
       "target": "api::user-song-preference.user-song-preference",
       "mappedBy": "song"
+    },
+    "sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "song.song-section"
     }
   }
 }
