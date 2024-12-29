@@ -51,54 +51,27 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
     const list = ctx.state.list;
     return { data: list };
   },
-  async updateMyCurrentBandList(ctx) {
-    const userId = ctx.state.user?.id;
+  async customCreate(ctx) {
+    const currentBandId = ctx.state.currentBandId;
+    const listData = ctx.request.body.data;
 
-    if (!userId) {
-      return ctx.unauthorized('You must be authenticated to update the list.');
-    }
+    const createdList = await strapi.entityService.create('api::list.list', {
+      data: {
+        ...listData,
+        band: currentBandId,
+      },
+    });
 
-    // Fetch the user with the 'currentBand' relation
-    const user = await strapi.entityService.findOne(
-      'plugin::users-permissions.user',
-      userId,
-      {
-        populate: ['currentBand'],
-      }
-    );
-
-    const currentBandId = user.currentBand?.id;
-
-    if (!currentBandId) {
-      return ctx.badRequest('No current band associated with the user.');
-    }
-
-    // Extract the list ID from the request params
-    const { id: listId } = ctx.params;
-
-    // Attempt to find the list that belongs to the current band
-    const existingList = await strapi.entityService.findOne(
-      'api::list.list',
-      listId,
-      {
-        filters: {
-          band: currentBandId,
-        },
-      }
-    );
-
-    if (!existingList) {
-      return ctx.notFound('List not found for the current band.');
-    }
-
-    // Perform the update
-    const updatedList = await strapi.entityService.update(
-      'api::list.list',
-      listId,
-      {
-        data: ctx.request.body.data,
-      }
-    );
+    return { data: createdList };
+  },
+  async customUpdate(ctx) {
+    const list = ctx.state.list;
+    const listData = ctx.request.body.data;
+    
+    const updatedList = await strapi.entityService.update('api::list.list', list.id, {
+      data: listData,
+      populate: "songs"
+    });
 
     return { data: updatedList };
   },

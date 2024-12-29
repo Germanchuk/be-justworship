@@ -9,8 +9,6 @@ module.exports = async (ctx, config, { strapi }) => {
     { populate: ["currentBand"] }
   );
 
-  console.dir(populatedUser);
-
   if (!populatedUser?.currentBand) {
     throw new PolicyError("No current band associated with the user.");
   }

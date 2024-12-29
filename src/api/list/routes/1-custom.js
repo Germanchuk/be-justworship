@@ -28,5 +28,28 @@ module.exports = {
         ],
       },
     },
+    {
+      method: "POST",
+      path: "/currentBandLists",
+      handler: "list.customCreate",
+      config: {
+        policies: [
+          "global::is-authenticated",
+          "api::list.check-current-band",
+        ],
+      },
+    },
+    {
+      method: "PUT",
+      path: "/currentBandLists/:listId",
+      handler: "list.customUpdate",
+      config: {
+        policies: [
+          "global::is-authenticated",
+          "api::list.check-current-band",
+          "api::list.is-list-related-to-band",
+        ],
+      },
+    }
   ],
 };

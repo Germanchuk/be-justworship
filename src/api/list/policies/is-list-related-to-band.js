@@ -10,7 +10,7 @@ module.exports = async (ctx, config, { strapi }) => {
 
   // Шукаємо список за його ID
   const list = await strapi.entityService.findOne("api::list.list", listId, {
-    populate: "*", // Можна коротше, якщо треба лише band
+    populate: ["band", "songs"], // Можна коротше, якщо треба лише band
   });
 
   // Якщо такого списку немає, або він не належить currentBand, повертаємо 404
