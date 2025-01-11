@@ -52,12 +52,12 @@ async function getParsedSong(url) {
   function getSong() {
     const song = {
       name: $songName.text().trim(),
-      content: [],
+      sections: [],
     };
 
     $blocks.each((index, blockElement) => {
       const block = getBlock($(blockElement));
-      song.content.push(block);
+      song.sections.push(block);
     });
 
     return song;
