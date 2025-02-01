@@ -41,7 +41,7 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
         ...(ctx.query.filters || {}),
         band: { $in: bandIds }
       };
-  
+
     // Query the List content type for all lists related to these band IDs
     const lists = await strapi.entityService.findMany('api::list.list', ctx.query);
 
@@ -67,7 +67,7 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
   async customUpdate(ctx) {
     const list = ctx.state.list;
     const listData = ctx.request.body.data;
-    
+
     const updatedList = await strapi.entityService.update('api::list.list', list.id, {
       data: listData,
       populate: "songs"
@@ -75,4 +75,11 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
 
     return { data: updatedList };
   },
+  async customDelete(ctx) {
+    const list = ctx.state.list;
+
+    const deletedEntity = await strapi.entityService.delete('api::list.list', list.id);
+
+    return ctx.send({ message: 'Deleted successfully', data: deletedEntity });
+  }
 }));

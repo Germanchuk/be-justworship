@@ -32,6 +32,12 @@
       "relation": "oneToMany",
       "target": "api::list.list",
       "mappedBy": "band"
+    },
+    "songs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::song.song",
+      "mappedBy": "owner"
     }
   }
 }

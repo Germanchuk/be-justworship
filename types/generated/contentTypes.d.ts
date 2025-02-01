@@ -831,6 +831,7 @@ export interface ApiBandBand extends Schema.CollectionType {
       'plugin::users-permissions.user'
     >;
     lists: Attribute.Relation<'api::band.band', 'oneToMany', 'api::list.list'>;
+    songs: Attribute.Relation<'api::band.band', 'oneToMany', 'api::song.song'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
@@ -950,6 +951,7 @@ export interface ApiSongSong extends Schema.CollectionType {
       'api::user-song-preference.user-song-preference'
     >;
     sections: Attribute.Component<'song.song-section', true>;
+    owner: Attribute.Relation<'api::song.song', 'manyToOne', 'api::band.band'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
