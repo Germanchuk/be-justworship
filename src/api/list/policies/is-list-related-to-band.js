@@ -8,9 +8,11 @@ module.exports = async (ctx, config, { strapi }) => {
     throw new NotFoundError("No listId provided in the route.");
   }
 
+
+
   // Шукаємо список за його ID
   const list = await strapi.entityService.findOne("api::list.list", listId, {
-    populate: ["band", "songs"], // Можна коротше, якщо треба лише band
+    populate: [...(ctx.request?.query?.populate ?? []), "band", "songs"], // Можна коротше, якщо треба лише band
   });
 
   // Якщо такого списку немає, або він не належить currentBand, повертаємо 404
