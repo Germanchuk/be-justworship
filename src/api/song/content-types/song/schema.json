@@ -12,9 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "content": {
-      "type": "json"
-    },
     "name": {
       "type": "string"
     },

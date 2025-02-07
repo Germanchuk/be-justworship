@@ -32,7 +32,8 @@ module.exports = {
         policies: [
           "global::is-authenticated",
           "global::has-current-band",
-          "api::song.is-song-related-to-band",
+          "global::has-current-church",
+          "api::song.has-view-rights",
         ],
       },
     },
@@ -43,7 +44,7 @@ module.exports = {
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-current-band"
         ],
       },
     },
@@ -68,6 +69,19 @@ module.exports = {
           "global::is-authenticated",
           "global::has-current-band",
           "api::song.is-song-related-to-band",
+        ],
+      },
+    },
+    {
+      method: "POST",
+      path: "/copySong/:songId",
+      handler: "song.copySong",
+      config: {
+        policies: [
+          "global::is-authenticated",
+          "global::has-current-band",
+          "global::has-current-church",
+          "api::song.has-view-rights",
         ],
       },
     }

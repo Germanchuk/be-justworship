@@ -917,7 +917,6 @@ export interface ApiSongSong extends Schema.CollectionType {
     draftAndPublish: false;
   };
   attributes: {
-    content: Attribute.JSON;
     name: Attribute.String;
     bpm: Attribute.Integer & Attribute.DefaultTo<0>;
     key: Attribute.Enumeration<
