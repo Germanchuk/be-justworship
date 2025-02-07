@@ -45,9 +45,11 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     const currentChurchId = ctx.state.currentChurchId;
     const filters = ctx.query.filters || {};
 
+    filters.church  = currentChurchId;
+
     // Отримуємо всі гурти, пов'язані з поточною церквою
     const bands = await strapi.entityService.findMany('api::band.band', {
-      filters: { church: currentChurchId },
+      filters,
     });
 
     // За допомогою Promise.all виконуємо паралельний запит для кожного гурту, щоб отримати пісні

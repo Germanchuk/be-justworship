@@ -832,6 +832,7 @@ export interface ApiBandBand extends Schema.CollectionType {
     >;
     lists: Attribute.Relation<'api::band.band', 'oneToMany', 'api::list.list'>;
     songs: Attribute.Relation<'api::band.band', 'oneToMany', 'api::song.song'>;
+    hidden: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &

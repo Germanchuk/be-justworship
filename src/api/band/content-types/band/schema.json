@@ -38,6 +38,10 @@
       "relation": "oneToMany",
       "target": "api::song.song",
       "mappedBy": "owner"
+    },
+    "hidden": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
