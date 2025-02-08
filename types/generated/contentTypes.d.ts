@@ -937,14 +937,6 @@ export interface ApiSongSong extends Schema.CollectionType {
       ]
     > &
       Attribute.DefaultTo<'C'>;
-    transposition: Attribute.Integer &
-      Attribute.SetMinMax<
-        {
-          max: 12;
-        },
-        number
-      > &
-      Attribute.DefaultTo<0>;
     users_song_preferences: Attribute.Relation<
       'api::song.song',
       'oneToMany',

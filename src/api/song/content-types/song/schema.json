@@ -37,11 +37,6 @@
       ],
       "default": "C"
     },
-    "transposition": {
-      "type": "integer",
-      "default": 0,
-      "max": 12
-    },
     "users_song_preferences": {
       "type": "relation",
       "relation": "oneToMany",

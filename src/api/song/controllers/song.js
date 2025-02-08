@@ -18,6 +18,8 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
         .service("api::song.1-custom")
         .scrapeHolychords(data.url);
 
+      console.log("parsedSong", parsedSong);
+
       return await strapi.entityService.create("api::song.song", {
         data: {
           ...parsedSong,
@@ -67,6 +69,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
   },
   async findOneBandSong(ctx) {
     const song = ctx.state.song;
+
     return { data: song };
   },
   async customCreate(ctx) {
@@ -89,12 +92,9 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     const song = ctx.state.song;
     const songData = ctx.request.body.data;
 
-    const name = await generateUniqueName(songData.name, ctx, strapi);
-
     const updatedSong = await strapi.entityService.update('api::song.song', song.id, {
       data: {
-        ...songData,
-        name
+        ...songData
       },
       populate: ["sections", ...(ctx?.query?.populate ?? [])],
     });
