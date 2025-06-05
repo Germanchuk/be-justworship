@@ -26,9 +26,11 @@ export interface SongSongSection extends Schema.Component {
   info: {
     displayName: 'Song section';
     icon: 'chartBubble';
+    description: '';
   };
   attributes: {
     content: Attribute.Text;
+    spacing: Attribute.Integer;
   };
 }
 
