@@ -2,12 +2,16 @@
   "collectionName": "components_song_song_sections",
   "info": {
     "displayName": "Song section",
-    "icon": "chartBubble"
+    "icon": "chartBubble",
+    "description": ""
   },
   "options": {},
   "attributes": {
     "content": {
       "type": "text"
+    },
+    "spacing": {
+      "type": "integer"
     }
   }
 }
