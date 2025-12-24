@@ -10,7 +10,6 @@
     "strapi": "strapi",
     "deploy": "strapi deploy"
   },
-  "devDependencies": {},
   "dependencies": {
     "@strapi/plugin-cloud": "4.26.0",
     "@strapi/plugin-i18n": "4.26.0",
@@ -32,7 +31,7 @@
     "uuid": "f05d94b0-af33-4158-914e-47b7d30dfcf9"
   },
   "engines": {
-    "node": ">=18.0.0 <=20.x.x",
+    "node": "20.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
