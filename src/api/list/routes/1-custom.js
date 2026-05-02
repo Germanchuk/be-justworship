@@ -18,6 +18,14 @@ module.exports = {
     },
     {
       method: "GET",
+      path: "/currentChurchLists",
+      handler: "list.currentChurchLists",
+      config: {
+        policies: ["global::is-authenticated", "global::has-current-church"],
+      },
+    },
+    {
+      method: "GET",
       path: "/currentBandLists/:listId",
       handler: "list.findOneBandList",
       config: {
