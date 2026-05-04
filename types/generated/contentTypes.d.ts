@@ -497,6 +497,7 @@ export interface ApiSongSong extends Schema.CollectionType {
     name: Attribute.String;
     owner: Attribute.Relation<'api::song.song', 'manyToOne', 'api::band.band'>;
     sections: Attribute.Component<'song.song-section', true>;
+    slate: Attribute.JSON;
     timeSignature: Attribute.Enumeration<['fourFour', 'threeFour']> &
       Attribute.DefaultTo<'fourFour'>;
     updatedAt: Attribute.DateTime;
