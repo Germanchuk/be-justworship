@@ -47,7 +47,7 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
   async putInternal(ctx) {
     const { songId } = ctx.params;
     const body = ctx.request.body || {};
-    const { state, version } = body;
+    const { state, version, slate } = body;
 
     if (typeof state !== 'string' || state.length === 0) {
       throw new ValidationError('state must be a non-empty base64 string');
@@ -72,9 +72,11 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
           data: { state, version: nextVersion, song: songId },
         });
 
-    await strapi.entityService.update(SONG_UID, songId, {
-      data: { lastCollabSavedAt: new Date() },
-    });
+    const songUpdate = { lastCollabSavedAt: new Date() };
+    if (Array.isArray(slate)) {
+      songUpdate.slate = slate;
+    }
+    await strapi.entityService.update(SONG_UID, songId, { data: songUpdate });
 
     return { id: saved.id, version: saved.version };
   },
