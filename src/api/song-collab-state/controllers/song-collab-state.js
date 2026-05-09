@@ -20,9 +20,34 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     const { songId } = ctx.params;
 
     const song = await strapi.entityService.findOne(SONG_UID, songId, {
-      fields: ['id', 'slate'],
+      fields: ['id', 'slate', 'name', 'bpm', 'key', 'timeSignature'],
     });
     if (!song) throw new NotFoundError('Song not found');
+
+    // Per-user preferences (transposition, hideChords) — used by collab to
+    // seed song-meta-row.capoBy / hideChordsFor on first migration of a song.
+    const preferences = await strapi.entityService.findMany(
+      'api::user-song-preference.user-song-preference',
+      {
+        filters: { song: { id: songId } },
+        populate: ['user'],
+      },
+    );
+
+    const fallbackPreferences = (preferences || [])
+      .filter((p) => p.user?.username)
+      .map((p) => ({
+        username: p.user.username,
+        transposition: p.transposition ?? 0,
+        hideChords: !!p.hideChords,
+      }));
+
+    const fallbackMeta = {
+      name: song.name ?? '',
+      bpm: typeof song.bpm === 'number' ? song.bpm : 0,
+      key: song.key ?? 'C',
+      timeSignature: song.timeSignature ?? 'fourFour',
+    };
 
     const existing = await findStateBySong(strapi, songId);
 
@@ -31,23 +56,24 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
         state: existing.state,
         version: existing.version ?? 0,
         fallbackSlate: null,
+        fallbackMeta,
+        fallbackPreferences,
       };
     }
 
-    // Lazy-migration path: collab-server bootstraps a Y.Doc from this
-    // and on first save we'll persist `state`, after which fallbackSlate
-    // is no longer returned.
     return {
       state: null,
       version: 0,
       fallbackSlate: song.slate ?? null,
+      fallbackMeta,
+      fallbackPreferences,
     };
   },
 
   async putInternal(ctx) {
     const { songId } = ctx.params;
     const body = ctx.request.body || {};
-    const { state, version, slate } = body;
+    const { state, version, slate, name, bpm, key, timeSignature } = body;
 
     if (typeof state !== 'string' || state.length === 0) {
       throw new ValidationError('state must be a non-empty base64 string');
@@ -73,9 +99,11 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
         });
 
     const songUpdate = { lastCollabSavedAt: new Date() };
-    if (Array.isArray(slate)) {
-      songUpdate.slate = slate;
-    }
+    if (Array.isArray(slate)) songUpdate.slate = slate;
+    if (typeof name === 'string') songUpdate.name = name;
+    if (typeof bpm === 'number' && Number.isFinite(bpm)) songUpdate.bpm = bpm;
+    if (typeof key === 'string') songUpdate.key = key;
+    if (typeof timeSignature === 'string') songUpdate.timeSignature = timeSignature;
     await strapi.entityService.update(SONG_UID, songId, { data: songUpdate });
 
     return { id: saved.id, version: saved.version };

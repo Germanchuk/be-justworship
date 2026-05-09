@@ -16,6 +16,8 @@ module.exports = [
       origin: [
         'http://localhost:1337',
         'http://localhost:5173',
+        /^http:\/\/192\.168\.\d+\.\d+:5173$/,
+        /^http:\/\/10\.\d+\.\d+\.\d+:5173$/,
         'https://justworship.uk',       // Ваші старі домени
         'https://new.justworship.uk'    // <--- ВАШ НОВИЙ ДОМЕН (без слеша в кінці!)
       ]
