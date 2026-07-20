@@ -73,6 +73,7 @@ $RECYCLE.BIN/
 *.sql
 *.sqlite
 *.sqlite3
+.tmp/data.db
 
 
 ############################
@@ -117,3 +118,4 @@ build
 .strapi-updater.json
 .strapi-cloud.json
 .env.predb
+.env.prod

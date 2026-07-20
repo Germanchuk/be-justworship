@@ -61,6 +61,18 @@
         "threeFour"
       ],
       "default": "fourFour"
+    },
+    "slate": {
+      "type": "json"
+    },
+    "song_collab_state": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::song-collab-state.song-collab-state",
+      "mappedBy": "song"
+    },
+    "lastCollabSavedAt": {
+      "type": "datetime"
     }
   }
 }

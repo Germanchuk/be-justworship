@@ -45,27 +45,30 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
   },
   async currentChurchSongs(ctx) {
     const currentChurchId = ctx.state.currentChurchId;
-    const filters = ctx.query.filters || {};
+    const { name: songNameFilter, ...bandFilters } = ctx.query.filters || {};
 
-    filters.church  = currentChurchId;
+    bandFilters.church = currentChurchId;
 
     // Отримуємо всі гурти, пов'язані з поточною церквою
     const bands = await strapi.entityService.findMany('api::band.band', {
-      filters,
+      filters: bandFilters,
     });
 
     // За допомогою Promise.all виконуємо паралельний запит для кожного гурту, щоб отримати пісні
-    return Promise.all(
+    const results = await Promise.all(
       bands.map(async (band) => {
         const songs = await strapi.entityService.findMany('api::song.song', {
           filters: {
-            ...filters,
             owner: band.id,
+            ...(songNameFilter ? { name: songNameFilter } : {}),
           },
         });
         return { ...band, songs };
       })
     );
+
+    // При пошуку приховуємо гурти, в яких немає пісень, що відповідають запиту
+    return songNameFilter ? results.filter((band) => band.songs.length > 0) : results;
   },
   async findOneBandSong(ctx) {
     const song = ctx.state.song;

@@ -461,6 +461,42 @@ export interface ApiListList extends Schema.CollectionType {
   };
 }
 
+export interface ApiSongCollabStateSongCollabState
+  extends Schema.CollectionType {
+  collectionName: 'song_collab_states';
+  info: {
+    displayName: 'Song collab state';
+    pluralName: 'song-collab-states';
+    singularName: 'song-collab-state';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::song-collab-state.song-collab-state',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    song: Attribute.Relation<
+      'api::song-collab-state.song-collab-state',
+      'oneToOne',
+      'api::song.song'
+    >;
+    state: Attribute.Text;
+    updatedAt: Attribute.DateTime;
+    updatedBy: Attribute.Relation<
+      'api::song-collab-state.song-collab-state',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    version: Attribute.Integer;
+  };
+}
+
 export interface ApiSongSong extends Schema.CollectionType {
   collectionName: 'songs';
   info: {
@@ -494,9 +530,16 @@ export interface ApiSongSong extends Schema.CollectionType {
       ]
     > &
       Attribute.DefaultTo<'C'>;
+    lastCollabSavedAt: Attribute.DateTime;
     name: Attribute.String;
     owner: Attribute.Relation<'api::song.song', 'manyToOne', 'api::band.band'>;
     sections: Attribute.Component<'song.song-section', true>;
+    slate: Attribute.JSON;
+    song_collab_state: Attribute.Relation<
+      'api::song.song',
+      'oneToOne',
+      'api::song-collab-state.song-collab-state'
+    >;
     timeSignature: Attribute.Enumeration<['fourFour', 'threeFour']> &
       Attribute.DefaultTo<'fourFour'>;
     updatedAt: Attribute.DateTime;
@@ -1019,6 +1062,7 @@ declare module '@strapi/types' {
       'api::band.band': ApiBandBand;
       'api::church.church': ApiChurchChurch;
       'api::list.list': ApiListList;
+      'api::song-collab-state.song-collab-state': ApiSongCollabStateSongCollabState;
       'api::song.song': ApiSongSong;
       'api::user-song-preference.user-song-preference': ApiUserSongPreferenceUserSongPreference;
       'plugin::content-releases.release': PluginContentReleasesRelease;

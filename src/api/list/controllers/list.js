@@ -21,31 +21,41 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
   },
   // Custom action to gather lists from user's bands
   async findMyLists(ctx) {
-    // Get the authenticated user's ID
     const userId = ctx.state.user?.id;
 
-    // Fetch the user with their associated bands
     const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId, {
-      populate: ['bands'],  // Populate the 'bands' relation
+      populate: ['bands'],
     });
 
-    // Check if the user has bands
-    if (!user.bands || user.bands.length === 0) {
-      return ctx.badRequest('User is not associated with any bands.');
+    const bandIds = (user?.bands || []).map((band) => band.id);
+
+    if (bandIds.length === 0) {
+      return {
+        data: [],
+        meta: { pagination: { total: 0, page: 1, pageSize: 25, pageCount: 0 } },
+      };
     }
 
-    // Collect all lists from user's bands
-    const bandIds = user.bands.map(band => band.id); // Extract band IDs
+    ctx.query.filters = {
+      ...(ctx.query.filters || {}),
+      band: { $in: bandIds },
+    };
+
+    const { data, meta } = await super.find(ctx);
+
+    return { data, meta };
+  },
+  async currentChurchLists(ctx) {
+    const currentChurchId = ctx.state.currentChurchId;
 
     ctx.query.filters = {
-        ...(ctx.query.filters || {}),
-        band: { $in: bandIds }
-      };
+      ...(ctx.query.filters || {}),
+      band: { church: currentChurchId },
+    };
 
-    // Query the List content type for all lists related to these band IDs
-    const lists = await strapi.entityService.findMany('api::list.list', ctx.query);
+    const { data, meta } = await super.find(ctx);
 
-    return { data: lists };
+    return { data, meta };
   },
   async findOneBandList(ctx) {
     const list = ctx.state.list;
