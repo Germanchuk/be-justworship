@@ -29,6 +29,14 @@
  *   node scripts/migrate-songs-to-slate.js --apply --id 42 # APPLY to one song
  */
 
+// Optional `--env-file <path>`: load a specific env file with override, so this
+// one-off can be aimed at a chosen DB unambiguously (e.g. --env-file .env.prod).
+// Without it, Strapi's default `.env` is used.
+const _envIdx = process.argv.indexOf('--env-file');
+if (_envIdx !== -1) {
+  require('dotenv').config({ path: process.argv[_envIdx + 1], override: true });
+}
+
 const strapiFactory = require('@strapi/strapi');
 
 // ---------------------------------------------------------------------------
@@ -135,6 +143,10 @@ async function main() {
   const apply = process.argv.includes('--apply');
   const idIdx = process.argv.indexOf('--id');
   const onlyId = idIdx !== -1 ? Number(process.argv[idIdx + 1]) : null;
+
+  console.log(
+    `DB target: host=${process.env.DATABASE_HOST} db=${process.env.DATABASE_NAME} user=${process.env.DATABASE_USERNAME}`,
+  );
 
   const app = await strapiFactory().load();
   app.log.level = 'error';

@@ -25,7 +25,7 @@ module.exports = [
           'http://localhost:1337',
           'http://localhost:5173',
           'https://justworship.uk',
-          'https://new.justworship.uk',
+          'https://pre.justworship.uk',
         ];
         const lanRegex = [
           /^http:\/\/192\.168\.\d+\.\d+:5173$/,
