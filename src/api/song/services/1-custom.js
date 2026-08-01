@@ -3,9 +3,7 @@ const puppeteer = require("puppeteer");
 
 const SONG_CONTENT_ID = "#music_text";
 const SONG_BLOCK_CLASS = ".blocks";
-const BLOCK_TEXT_CLASS = "text";
 const BLOCK_CHORDS_CLASS = "chopds"; // wtf?
-const BLOCK_TITLE_CLASS = "videlit_line";
 
 module.exports = {
   async scrapeHolychords(url) {
@@ -20,12 +18,22 @@ module.exports = {
   },
 };
 
-const ItemType = {
-  CHORD: "chord",
-  TEXT: "text",
-  HINT: "hint",
-  EMPTY: "empty",
-};
+const makeNode = (type, text) => ({ type, children: [{ text }] });
+const makeEmptyLine = () => makeNode("empty-line", "");
+
+/**
+ * Holychords віддає &nbsp; і \r, а акорди вирівнює пробілами на початку рядка,
+ * тому зрізаємо лише кінець — інакше акорди "з'їдуть" відносно тексту.
+ */
+function normalizeRowText(raw) {
+  return raw.replace(/ /g, " ").replace(/\r/g, "").replace(/\s+$/, "");
+}
+
+/** Клас може бути як на самому рядку, так і на вкладеному span — перевіряємо обидва. */
+function hasClass($row, className) {
+  const own = ($row.attr("class") || "").split(/\s+/).includes(className);
+  return own || $row.find(`.${className}`).length > 0;
+}
 
 async function getParsedSong(url) {
   const $ = await getSelector(url);
@@ -34,36 +42,53 @@ async function getParsedSong(url) {
   const $blocks = $songContent.find(SONG_BLOCK_CLASS);
   const $songName = $("h2.t-worship-leader__marquee__headline")
 
-  const song = getSong();
-
-  function getBlock($block) {
-    const lines = [];
+  /**
+   * Один `.blocks` → одна Slate-секція; рядок з класом `chopds` → `chord-line`,
+   * решта → `line`. Якщо клас на сайті бреше, редактор перекласифікує рядок сам
+   * (нормалізатор `withSections` звіряє вміст через `isChordsLine`).
+   */
+  function getSection($block) {
+    const children = [];
 
     $block.contents().each((index, row) => {
       const $row = $(row);
-      if ($row.contents().length) {
-        lines.push($row.text().trim());
-      }
+      if (!$row.contents().length) return;
+
+      const content = normalizeRowText($row.text());
+      // Порожні рядки всередині секції редактор все одно виносить у корінь.
+      if (!content.trim()) return;
+
+      const type = hasClass($row, BLOCK_CHORDS_CLASS) ? "chord-line" : "line";
+      children.push(makeNode(type, content));
     });
 
-    return { content: lines.join("\n") };
+    return children.length ? { type: "section", children } : null;
   }
 
+  /**
+   * Повертаємо ТІЛО документа без хедера (song-name + song-meta-row): collab
+   * бачить `fallbackSlate` без хедера і будує хедер сам з полів пісні
+   * (`bootstrapWithHeader` у slateBridge.ts), тож дублювати його тут не треба.
+   */
   function getSong() {
-    const song = {
-      name: $songName.text().trim(),
-      sections: [],
-    };
+    const slate = [];
 
     $blocks.each((index, blockElement) => {
-      const block = getBlock($(blockElement));
-      song.sections.push(block);
+      const section = getSection($(blockElement));
+      if (!section) return;
+
+      // Сусідні секції редактор зливає в одну — розділяємо порожнім рядком.
+      if (slate.length) slate.push(makeEmptyLine());
+      slate.push(section);
     });
 
-    return song;
+    return {
+      name: $songName.text().trim(),
+      slate,
+    };
   }
 
-  return song;
+  return getSong();
 }
 
 async function getSelector(url) {
