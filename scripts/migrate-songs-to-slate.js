@@ -14,7 +14,8 @@
  * Safety:
  *   - DRY-RUN BY DEFAULT. Pass `--apply` to actually write.
  *   - Idempotent: skips songs that already have a non-empty `slate`
- *     (created in the new editor or migrated earlier).
+ *     (created in the new editor or migrated earlier). `--force` disables
+ *     that skip and OVERWRITES `slate` from `sections`.
  *   - Never touches `sections` — it stays as the original-data backup.
  *
  * The header build mirrors collab `src/slateBridge.ts` makeHeader().
@@ -27,6 +28,13 @@
  *   node scripts/migrate-songs-to-slate.js --id 42         # dry-run, print doc for #42
  *   node scripts/migrate-songs-to-slate.js --apply         # APPLY to all songs
  *   node scripts/migrate-songs-to-slate.js --apply --id 42 # APPLY to one song
+ *
+ * Full re-migration (DESTRUCTIVE — drops all collab work on the target db):
+ *   node scripts/migrate-songs-to-slate.js --apply --force --reset-collab
+ *     `--force`         rebuild `slate` from `sections` even if `slate` is set
+ *     `--reset-collab`  delete every `song-collab-state` row and null every
+ *                       `lastCollabSavedAt`, so each song is "not migrated"
+ *                       again and collab re-bootstraps from the fresh `slate`.
  */
 
 // Optional `--env-file <path>`: load a specific env file with override, so this
@@ -141,6 +149,8 @@ function buildSlateDoc(song) {
 // ---------------------------------------------------------------------------
 async function main() {
   const apply = process.argv.includes('--apply');
+  const force = process.argv.includes('--force');
+  const resetCollab = process.argv.includes('--reset-collab');
   const idIdx = process.argv.indexOf('--id');
   const onlyId = idIdx !== -1 ? Number(process.argv[idIdx + 1]) : null;
 
@@ -158,12 +168,28 @@ async function main() {
     populate: { sections: true },
   });
 
+  // `--reset-collab` makes the whole run a re-migration: every song goes back
+  // to "not migrated" (no collab-state row, no lastCollabSavedAt), so collab
+  // bootstraps it again from the `slate` this run writes.
+  let droppedStates = 0;
+  if (resetCollab) {
+    const states = await app.db
+      .query('api::song-collab-state.song-collab-state')
+      .findMany({ select: ['id'] });
+    droppedStates = states.length;
+    if (apply) {
+      await app.db
+        .query('api::song-collab-state.song-collab-state')
+        .deleteMany({ where: onlyId ? { song: onlyId } : {} });
+    }
+  }
+
   let migrated = 0;
   let skipped = 0;
 
   for (const song of songs) {
     const hasSlate = Array.isArray(song.slate) && song.slate.length > 0;
-    if (hasSlate) {
+    if (hasSlate && !force) {
       skipped++;
       continue;
     }
@@ -172,7 +198,10 @@ async function main() {
 
     if (apply) {
       await app.entityService.update('api::song.song', song.id, {
-        data: { slate: doc },
+        data: {
+          slate: doc,
+          ...(resetCollab ? { lastCollabSavedAt: null } : {}),
+        },
       });
     }
 
@@ -185,8 +214,13 @@ async function main() {
   }
 
   console.log(
-    `\n${apply ? 'APPLIED' : 'DRY-RUN'}: ${migrated} migrated, ` +
-      `${skipped} skipped (already had slate), ${songs.length} total.`,
+    `\n${apply ? 'APPLIED' : 'DRY-RUN'}${force ? ' [force]' : ''}: ` +
+      `${migrated} migrated, ${skipped} skipped (already had slate), ` +
+      `${songs.length} total.` +
+      (resetCollab
+        ? ` Collab reset: ${droppedStates} collab-state rows ` +
+          `${apply ? 'deleted' : 'would be deleted'}, lastCollabSavedAt cleared.`
+        : ''),
   );
 
   await app.destroy();
