@@ -12,7 +12,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     try {
       // @ts-ignore-next-line
       const { data } = ctx.request.body;
-      const currentBandId = ctx.state.currentBandId;
+      const bandId = ctx.state.bandId;
 
       const parsedSong = await strapi
         .service("api::song.1-custom")
@@ -23,7 +23,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
       return await strapi.entityService.create("api::song.song", {
         data: {
           ...parsedSong,
-          owner: currentBandId
+          owner: bandId
         },
       });
 
@@ -31,12 +31,12 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
       console.log(e);
     }
   },
-  async currentBandSongs(ctx) {
-    const currentBandId = ctx.state.currentBandId;
+  async bandSongs(ctx) {
+    const bandId = ctx.state.bandId;
 
     ctx.query.filters = {
       ...(ctx.query.filters || {}),
-      owner: currentBandId,
+      owner: bandId,
     };
 
     const { data, meta } = await super.find(ctx);
@@ -76,7 +76,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     return { data: song };
   },
   async customCreate(ctx) {
-    const currentBandId = ctx.state.currentBandId;
+    const bandId = ctx.state.bandId;
     const songData = ctx.request.body.data;
 
     const name = await generateUniqueName(songData.name, ctx, strapi);
@@ -84,7 +84,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     const createdSong = await strapi.entityService.create('api::song.song', {
       data: {
         ...songData,
-        owner: currentBandId,
+        owner: bandId,
         name
       },
     });
@@ -113,7 +113,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
   },
   async copySong(ctx) {
     const song = ctx.state.song;
-    const currentBandId = ctx.state.currentBandId;
+    const bandId = ctx.state.bandId;
 
 
     const originalSong = await strapi.entityService.findOne('api::song.song', song.id, {
@@ -129,7 +129,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     const newSong = await strapi.entityService.create('api::song.song', {
       data: {
         ...songData,
-        owner: currentBandId,
+        owner: bandId,
         name
       },
     });

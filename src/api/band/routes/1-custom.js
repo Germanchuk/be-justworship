@@ -1,11 +1,28 @@
 module.exports = {
   routes: [
     {
+      // Головний екран: усі гурти юзера з коротким прев'ю активності.
+      method: "GET",
+      path: "/myBands",
+      handler: "band.myBands",
+      config: {
+        policies: ["global::is-authenticated"],
+      },
+    },
+    {
       method: "PUT",
-      path: "/currentBand/playerDevice",
+      path: "/bands/:bandId/playerDevice",
       handler: "band.setPlayerDevice",
       config: {
-        policies: ["global::is-authenticated", "global::has-current-band"],
+        policies: ["global::is-authenticated", "global::has-band-access"],
+      },
+    },
+    {
+      method: "GET",
+      path: "/bands/:bandId/members",
+      handler: "band.bandMembers",
+      config: {
+        policies: ["global::is-authenticated", "global::has-band-access"],
       },
     },
   ],

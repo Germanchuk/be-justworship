@@ -2,10 +2,10 @@ module.exports = {
   routes: [
     {
       method: "GET",
-      path: "/currentBandLists",
-      handler: "list.currentBandLists",
+      path: "/bands/:bandId/lists",
+      handler: "list.bandLists",
       config: {
-        policies: ["global::is-authenticated", "global::has-current-band"],
+        policies: ["global::is-authenticated", "global::has-band-access"],
       },
     },
     {
@@ -26,47 +26,47 @@ module.exports = {
     },
     {
       method: "GET",
-      path: "/currentBandLists/:listId",
+      path: "/bands/:bandId/lists/:listId",
       handler: "list.findOneBandList",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
           "api::list.is-list-related-to-band",
         ],
       },
     },
     {
       method: "POST",
-      path: "/currentBandLists",
+      path: "/bands/:bandId/lists",
       handler: "list.customCreate",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
         ],
       },
     },
     {
       method: "PUT",
-      path: "/currentBandLists/:listId",
+      path: "/bands/:bandId/lists/:listId",
       handler: "list.customUpdate",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
           "api::list.is-list-related-to-band",
         ],
       },
     },
     {
       method: "DELETE",
-      path: "/currentBandLists/:listId",
+      path: "/bands/:bandId/lists/:listId",
       handler: "list.customDelete",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
           "api::list.is-list-related-to-band",
         ],
       },

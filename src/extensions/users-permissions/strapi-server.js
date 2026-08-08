@@ -12,7 +12,7 @@ module.exports = (plugin) => {
         const updateData = ctx.request.body;
   
         // Define the fields that the user is allowed to update (for security)
-        const allowedFields = ['username', 'email', 'currentBand']; // Customize as needed
+        const allowedFields = ['username', 'email']; // Customize as needed
   
         // Filter out only the fields that are allowed to be updated
         const filteredData = Object.keys(updateData)
