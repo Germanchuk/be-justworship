@@ -7,12 +7,12 @@
 const { createCoreController } = require('@strapi/strapi').factories;
 
 module.exports = createCoreController('api::list.list', ({ strapi }) => ({
-  async currentBandLists(ctx) {
-    const currentBandId = ctx.state.currentBandId;
+  async bandLists(ctx) {
+    const bandId = ctx.state.bandId;
 
     ctx.query.filters = {
       ...(ctx.query.filters || {}),
-      band: currentBandId,
+      band: bandId,
     };
 
     const { data, meta } = await super.find(ctx);
@@ -62,13 +62,13 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
     return { data: list };
   },
   async customCreate(ctx) {
-    const currentBandId = ctx.state.currentBandId;
+    const bandId = ctx.state.bandId;
     const listData = ctx.request.body.data;
 
     const createdList = await strapi.entityService.create('api::list.list', {
       data: {
         ...listData,
-        band: currentBandId,
+        band: bandId,
       },
     });
 

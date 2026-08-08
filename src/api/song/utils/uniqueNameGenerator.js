@@ -2,13 +2,13 @@ module.exports = async (desiredName, ctx, strapi) => {
 
   let newName = desiredName;
   let counter = 2;
-  const currentBandId = ctx.state.currentBandId;
+  const bandId = ctx.state.bandId;
 
   // Шукаємо записи з поточним newName
   let songs = await strapi.entityService.findMany("api::song.song", {
     filters: {
       name: { $eq: newName },
-      owner: currentBandId,
+      owner: bandId,
     }
   });
 

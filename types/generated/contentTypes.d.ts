@@ -482,6 +482,7 @@ export interface ApiSongCollabStateSongCollabState
       'admin::user'
     > &
       Attribute.Private;
+    slateFull: Attribute.JSON;
     song: Attribute.Relation<
       'api::song-collab-state.song-collab-state',
       'oneToOne',
@@ -1008,11 +1009,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'admin::user'
     > &
       Attribute.Private;
-    currentBand: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::band.band'
-    >;
     email: Attribute.Email &
       Attribute.Required &
       Attribute.SetMinMaxLength<{

@@ -20,6 +20,9 @@
     "state": {
       "type": "text"
     },
+    "slateFull": {
+      "type": "json"
+    },
     "version": {
       "type": "integer"
     }

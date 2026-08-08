@@ -73,7 +73,16 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
   async putInternal(ctx) {
     const { songId } = ctx.params;
     const body = ctx.request.body || {};
-    const { state, version, slate, name, bpm, key, timeSignature } = body;
+    const {
+      state,
+      version,
+      slate,
+      slateFull,
+      name,
+      bpm,
+      key,
+      timeSignature,
+    } = body;
 
     if (typeof state !== 'string' || state.length === 0) {
       throw new ValidationError('state must be a non-empty base64 string');
@@ -90,12 +99,20 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
       ? version
       : (existing?.version ?? 0) + 1;
 
+    // `slateFull` — повний Slate-документ, як його бачить редактор, з усіма
+    // per-user даними (примітки, капо, згорнуті секції, режими показу).
+    // Живе тут, а НЕ на пісні: `song.slate` віддається клієнтам звичайним
+    // REST-ом, а ця таблиця доступна лише через internal-ендпоінти. Це резервна
+    // копія на випадок, якщо Yjs-стан зіпсується — джерело правди лишається
+    // `state`. Пропущений/некоректний `slateFull` не затирає попередній:
+    // краще трохи застаріла копія, ніж жодної.
+    const stateData = { state, version: nextVersion };
+    if (Array.isArray(slateFull)) stateData.slateFull = slateFull;
+
     const saved = existing
-      ? await strapi.entityService.update(UID, existing.id, {
-          data: { state, version: nextVersion },
-        })
+      ? await strapi.entityService.update(UID, existing.id, { data: stateData })
       : await strapi.entityService.create(UID, {
-          data: { state, version: nextVersion, song: songId },
+          data: { ...stateData, song: songId },
         });
 
     const songUpdate = { lastCollabSavedAt: new Date() };
@@ -121,15 +138,17 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     const user = await strapi.entityService.findOne(
       'plugin::users-permissions.user',
       userId,
-      { populate: ['currentBand'] },
+      { populate: ['bands'] },
     );
 
     if (!user) {
       return { allowed: false, user: null };
     }
 
-    const currentBandId = user.currentBand?.id;
-    if (!currentBandId) {
+    // Документ collab іменується `song:<id>` і гурта в собі не несе, тому
+    // доступ рахуємо від усіх гуртів юзера: пісня має належати одному з них.
+    const userBandIds = (user.bands ?? []).map((band) => band.id);
+    if (userBandIds.length === 0) {
       return { allowed: false, user: { id: user.id, name: user.username } };
     }
 
@@ -140,7 +159,7 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     const allowed = !!(
       song &&
       song.owner &&
-      song.owner.id === currentBandId
+      userBandIds.includes(song.owner.id)
     );
 
     return {

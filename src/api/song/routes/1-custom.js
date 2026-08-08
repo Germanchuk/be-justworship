@@ -2,18 +2,18 @@ module.exports = {
   routes: [
     {
       method: "POST",
-      path: "/parseHolychords",
+      path: "/bands/:bandId/parseHolychords",
       handler: "song.parseHolychords",
       config: {
-        policies: ["global::is-authenticated", "global::has-current-band"],
+        policies: ["global::is-authenticated", "global::has-band-access"],
       },
     },
     {
       method: "GET",
-      path: "/currentBandSongs",
-      handler: "song.currentBandSongs",
+      path: "/bands/:bandId/songs",
+      handler: "song.bandSongs",
       config: {
-        policies: ["global::is-authenticated", "global::has-current-band"],
+        policies: ["global::is-authenticated", "global::has-band-access"],
       },
     },
     {
@@ -21,67 +21,67 @@ module.exports = {
       path: "/currentChurchSongs",
       handler: "song.currentChurchSongs",
       config: {
-        policies: ["global::is-authenticated", "global::has-current-band", "global::has-current-church"],
+        policies: ["global::is-authenticated", "global::has-current-church"],
       },
     },
     {
       method: "GET",
-      path: "/currentBandSongs/:songId",
+      path: "/bands/:bandId/songs/:songId",
       handler: "song.findOneBandSong",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
-          "global::has-current-church",
-          "api::song.has-view-rights",
+          "global::has-band-access",
+          "api::song.is-song-related-to-band",
         ],
       },
     },
     {
       method: "POST",
-      path: "/currentBandSongs",
+      path: "/bands/:bandId/songs",
       handler: "song.customCreate",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band"
+          "global::has-band-access"
         ],
       },
     },
     {
       method: "PUT",
-      path: "/currentBandSongs/:songId",
+      path: "/bands/:bandId/songs/:songId",
       handler: "song.customUpdate",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
           "api::song.is-song-related-to-band",
         ],
       },
     },
     {
       method: "DELETE",
-      path: "/currentBandSongs/:songId",
+      path: "/bands/:bandId/songs/:songId",
       handler: "song.customDelete",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
+          "global::has-band-access",
           "api::song.is-song-related-to-band",
         ],
       },
     },
     {
+      // Копіювання: `:bandId` — куди кладемо, `:songId` — звідки беремо.
+      // Джерело може бути з будь-якого гурту юзера, тому окрема політика.
       method: "POST",
-      path: "/copySong/:songId",
+      path: "/bands/:bandId/songs/:songId/copy",
       handler: "song.copySong",
       config: {
         policies: [
           "global::is-authenticated",
-          "global::has-current-band",
-          "global::has-current-church",
-          "api::song.has-view-rights",
+          "global::has-band-access",
+          "api::song.is-song-in-my-bands",
         ],
       },
     }

@@ -1,8 +1,31 @@
 'use strict';
 
+// Дозволи в Strapi прив'язані до імені хендлера, а не до шляху. Оскільки всі
+// ці екшени й так закриті політиками `is-authenticated` + `has-band-access`,
+// тримаємо їхні гранти тут: інакше кожне перейменування хендлера доводиться
+// доклацувати руками в адмінці кожного середовища.
 const PUBLIC_AUTHENTICATED_ACTIONS = [
   // Band-level designated playback device (remote-playback feature).
   'api::band.band.setPlayerDevice',
+  // Склад гурту — для вибору адресата приміток у режимі приміток.
+  'api::band.band.bandMembers',
+  // Головний екран — список гуртів юзера.
+  'api::band.band.myBands',
+  // Пісні гурту.
+  'api::song.song.bandSongs',
+  'api::song.song.findOneBandSong',
+  'api::song.song.customCreate',
+  'api::song.song.customUpdate',
+  'api::song.song.customDelete',
+  'api::song.song.copySong',
+  'api::song.song.parseHolychords',
+  // Списки служінь гурту.
+  'api::list.list.bandLists',
+  'api::list.list.findMyLists',
+  'api::list.list.findOneBandList',
+  'api::list.list.customCreate',
+  'api::list.list.customUpdate',
+  'api::list.list.customDelete',
 ];
 
 module.exports = {
