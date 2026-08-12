@@ -43,11 +43,8 @@
       "type": "boolean",
       "default": false
     },
-    "playerDeviceId": {
-      "type": "string"
-    },
-    "playerDeviceName": {
-      "type": "string"
+    "audioHostUserId": {
+      "type": "integer"
     }
   }
 }

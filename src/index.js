@@ -5,8 +5,8 @@
 // тримаємо їхні гранти тут: інакше кожне перейменування хендлера доводиться
 // доклацувати руками в адмінці кожного середовища.
 const PUBLIC_AUTHENTICATED_ACTIONS = [
-  // Band-level designated playback device (remote-playback feature).
-  'api::band.band.setPlayerDevice',
+  // Хост звуку гурту (віддалене програвання).
+  'api::band.band.setAudioHost',
   // Склад гурту — для вибору адресата приміток у режимі приміток.
   'api::band.band.bandMembers',
   // Головний екран — список гуртів юзера.
