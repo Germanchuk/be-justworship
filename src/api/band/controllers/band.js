@@ -54,19 +54,29 @@ module.exports = createCoreController('api::band.band', ({ strapi }) => ({
     return { data };
   },
 
-  // Sets (or clears) the band's designated playback device. Band-scoped:
-  // operates on the band from the URL (resolved by has-band-access).
-  async setPlayerDevice(ctx) {
+  // Призначає (або знімає, userId=null) хоста звуку гурту — акаунт, чий
+  // пристрій грає фон на всіх (планшет за пультом). Це durable-пам'ять
+  // призначення; чи хост зараз онлайн — вирішує awareness band-кімнати.
+  async setAudioHost(ctx) {
     const bandId = ctx.state.bandId;
     const body = ctx.request.body?.data ?? ctx.request.body ?? {};
-    const playerDeviceId = body.playerDeviceId ?? null;
-    const playerDeviceName = body.playerDeviceName ?? null;
+    const userId = body.userId ?? null;
+
+    if (userId != null) {
+      const band = await strapi.entityService.findOne('api::band.band', bandId, {
+        populate: { users: { fields: ['id'] } },
+      });
+      const isMember = (band?.users ?? []).some((user) => user.id === Number(userId));
+      if (!isMember) {
+        return ctx.badRequest('audioHost must be a member of the band');
+      }
+    }
 
     const updated = await strapi.entityService.update('api::band.band', bandId, {
-      data: { playerDeviceId, playerDeviceName },
+      data: { audioHostUserId: userId == null ? null : Number(userId) },
     });
 
-    return { data: updated };
+    return { data: { id: updated.id, audioHostUserId: updated.audioHostUserId ?? null } };
   },
 
   // Склад гурту — лише id + нік. Потрібен фронту, щоб дати вибір,

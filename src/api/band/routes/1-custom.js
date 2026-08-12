@@ -10,9 +10,10 @@ module.exports = {
       },
     },
     {
+      // Хост звуку гурту (durable-призначення; жива правда — в awareness).
       method: "PUT",
-      path: "/bands/:bandId/playerDevice",
-      handler: "band.setPlayerDevice",
+      path: "/bands/:bandId/audioHost",
+      handler: "band.setAudioHost",
       config: {
         policies: ["global::is-authenticated", "global::has-band-access"],
       },
