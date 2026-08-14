@@ -74,6 +74,10 @@ function isChordsLine(line) {
 // ---------------------------------------------------------------------------
 function timeSignatureToDisplay(value) {
   if (value === 'threeFour') return '3/4';
+  if (value === 'sixEight') return '6/8';
+  if (value === 'twoFour') return '2/4';
+  if (value === 'fiveFour') return '5/4';
+  if (value === 'twelveEight') return '12/8';
   return '4/4'; // fourFour / undefined / unknown -> default
 }
 

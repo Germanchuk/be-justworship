@@ -58,7 +58,11 @@
       "type": "enumeration",
       "enum": [
         "fourFour",
-        "threeFour"
+        "threeFour",
+        "sixEight",
+        "twoFour",
+        "fiveFour",
+        "twelveEight"
       ],
       "default": "fourFour"
     },

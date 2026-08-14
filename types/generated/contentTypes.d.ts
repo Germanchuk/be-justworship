@@ -542,7 +542,16 @@ export interface ApiSongSong extends Schema.CollectionType {
       'oneToOne',
       'api::song-collab-state.song-collab-state'
     >;
-    timeSignature: Attribute.Enumeration<['fourFour', 'threeFour']> &
+    timeSignature: Attribute.Enumeration<
+      [
+        'fourFour',
+        'threeFour',
+        'sixEight',
+        'twoFour',
+        'fiveFour',
+        'twelveEight'
+      ]
+    > &
       Attribute.DefaultTo<'fourFour'>;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
