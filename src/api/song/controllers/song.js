@@ -123,7 +123,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
     const name = await generateUniqueName(originalSong.name, ctx, strapi);
 
     // Видаляємо поля, які автоматично створюються або мають бути унікальними
-    const { id: originalId, createdAt, updatedAt, updatedBy, createdBy, users_song_preferences, publishedAt, ...songData } = originalSong;
+    const { id: originalId, createdAt, updatedAt, updatedBy, createdBy, publishedAt, ...songData } = originalSong;
 
     // Створюємо нову пісню з отриманими даними
     const newSong = await strapi.entityService.create('api::song.song', {

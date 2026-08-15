@@ -24,24 +24,6 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     });
     if (!song) throw new NotFoundError('Song not found');
 
-    // Per-user preferences (transposition, hideChords) — used by collab to
-    // seed song-meta-row.capoBy / hideChordsFor on first migration of a song.
-    const preferences = await strapi.entityService.findMany(
-      'api::user-song-preference.user-song-preference',
-      {
-        filters: { song: { id: songId } },
-        populate: ['user'],
-      },
-    );
-
-    const fallbackPreferences = (preferences || [])
-      .filter((p) => p.user?.username)
-      .map((p) => ({
-        username: p.user.username,
-        transposition: p.transposition ?? 0,
-        hideChords: !!p.hideChords,
-      }));
-
     const fallbackMeta = {
       name: song.name ?? '',
       bpm: typeof song.bpm === 'number' ? song.bpm : 0,
@@ -57,7 +39,6 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
         version: existing.version ?? 0,
         fallbackSlate: null,
         fallbackMeta,
-        fallbackPreferences,
       };
     }
 
@@ -66,7 +47,6 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
       version: 0,
       fallbackSlate: song.slate ?? null,
       fallbackMeta,
-      fallbackPreferences,
     };
   },
 
