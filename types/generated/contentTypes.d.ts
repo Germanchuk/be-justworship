@@ -556,62 +556,6 @@ export interface ApiSongSong extends Schema.CollectionType {
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::song.song', 'oneToOne', 'admin::user'> &
       Attribute.Private;
-    users_song_preferences: Attribute.Relation<
-      'api::song.song',
-      'oneToMany',
-      'api::user-song-preference.user-song-preference'
-    >;
-  };
-}
-
-export interface ApiUserSongPreferenceUserSongPreference
-  extends Schema.CollectionType {
-  collectionName: 'user_song_preferences';
-  info: {
-    description: '';
-    displayName: 'User song preference';
-    pluralName: 'user-song-preferences';
-    singularName: 'user-song-preference';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::user-song-preference.user-song-preference',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    hideChords: Attribute.Boolean & Attribute.DefaultTo<false>;
-    hideLyrics: Attribute.Boolean & Attribute.DefaultTo<false>;
-    song: Attribute.Relation<
-      'api::user-song-preference.user-song-preference',
-      'manyToOne',
-      'api::song.song'
-    >;
-    transposition: Attribute.Integer &
-      Attribute.SetMinMax<
-        {
-          max: 11;
-          min: 0;
-        },
-        number
-      > &
-      Attribute.DefaultTo<0>;
-    updatedAt: Attribute.DateTime;
-    updatedBy: Attribute.Relation<
-      'api::user-song-preference.user-song-preference',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    user: Attribute.Relation<
-      'api::user-song-preference.user-song-preference',
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
   };
 }
 
@@ -1034,11 +978,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    song_preferences: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToMany',
-      'api::user-song-preference.user-song-preference'
-    >;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<
       'plugin::users-permissions.user',
@@ -1070,7 +1009,6 @@ declare module '@strapi/types' {
       'api::list.list': ApiListList;
       'api::song-collab-state.song-collab-state': ApiSongCollabStateSongCollabState;
       'api::song.song': ApiSongSong;
-      'api::user-song-preference.user-song-preference': ApiUserSongPreferenceUserSongPreference;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

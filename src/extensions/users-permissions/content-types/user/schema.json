@@ -76,12 +76,6 @@
       "relation": "manyToMany",
       "target": "api::band.band",
       "inversedBy": "users"
-    },
-    "song_preferences": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::user-song-preference.user-song-preference",
-      "mappedBy": "user"
     }
   }
 }
