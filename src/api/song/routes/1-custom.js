@@ -17,6 +17,16 @@ module.exports = {
       },
     },
     {
+      // Пошук пісні по всіх гуртах юзера. Гурт у відповіді, а не в запиті:
+      // та сама пісня може лежати в кількох гуртах, і це різні пісні.
+      method: "GET",
+      path: "/searchSongs",
+      handler: "song.searchMySongs",
+      config: {
+        policies: ["global::is-authenticated"],
+      },
+    },
+    {
       method: "GET",
       path: "/currentChurchSongs",
       handler: "song.currentChurchSongs",

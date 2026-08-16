@@ -18,6 +18,8 @@ const PUBLIC_AUTHENTICATED_ACTIONS = [
   'api::song.song.customUpdate',
   'api::song.song.customDelete',
   'api::song.song.copySong',
+  // Пошук пісні по всіх гуртах юзера.
+  'api::song.song.searchMySongs',
   'api::song.song.parseHolychords',
   // Списки служінь гурту.
   'api::list.list.bandLists',

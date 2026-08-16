@@ -43,6 +43,57 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
 
     return { data, meta };
   },
+  // Пошук пісні по всіх гуртах юзера, згрупований по гуртах: однойменні пісні
+  // в різних гуртах — різні пісні, тож зливати їх в один список не можна.
+  async searchMySongs(ctx) {
+    const query = String(ctx.query.q ?? '').trim();
+
+    // Порожній запит не шукаємо: інакше віддали б усі пісні всіх гуртів.
+    if (!query) {
+      return { data: [] };
+    }
+
+    const populatedUser = await strapi.entityService.findOne(
+      'plugin::users-permissions.user',
+      ctx.state.user.id,
+      { populate: { bands: { fields: ['id', 'name'] } } }
+    );
+
+    const bands = populatedUser?.bands ?? [];
+
+    if (bands.length === 0) {
+      return { data: [] };
+    }
+
+    const songs = await strapi.entityService.findMany('api::song.song', {
+      filters: {
+        owner: { id: { $in: bands.map((band) => band.id) } },
+        name: { $containsi: query },
+      },
+      fields: ['id', 'name'],
+      populate: { owner: { fields: ['id'] } },
+      sort: { name: 'asc' },
+      // Стеля на випадок запиту в одну літеру — екран усе одно стільки не
+      // покаже, а тягнути всю бібліотеку немає сенсу.
+      limit: 100,
+    });
+
+    // Групи заводимо наперед, у порядку назв гуртів: так порядок секцій
+    // не стрибає від запиту до запиту.
+    const groups = new Map(
+      [...bands]
+        .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
+        .map((band) => [band.id, { band: { id: band.id, name: band.name }, songs: [] }])
+    );
+
+    songs.forEach((song) => {
+      groups.get(song.owner?.id)?.songs.push({ id: song.id, name: song.name });
+    });
+
+    return {
+      data: [...groups.values()].filter((group) => group.songs.length > 0),
+    };
+  },
   async currentChurchSongs(ctx) {
     const currentChurchId = ctx.state.currentChurchId;
     const { name: songNameFilter, ...bandFilters } = ctx.query.filters || {};
