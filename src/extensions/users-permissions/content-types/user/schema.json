@@ -76,6 +76,18 @@
       "relation": "manyToMany",
       "target": "api::band.band",
       "inversedBy": "users"
+    },
+    "ledBands": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::band.band",
+      "mappedBy": "leader"
+    },
+    "guestBands": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::band.band",
+      "mappedBy": "guests"
     }
   }
 }

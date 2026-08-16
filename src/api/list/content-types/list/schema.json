@@ -15,6 +15,9 @@
     "date": {
       "type": "date"
     },
+    "title": {
+      "type": "string"
+    },
     "songs": {
       "type": "relation",
       "relation": "oneToMany",
