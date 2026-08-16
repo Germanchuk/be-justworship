@@ -6,6 +6,10 @@
 
 const { createCoreController } = require("@strapi/strapi").factories;
 const generateUniqueName = require("../utils/uniqueNameGenerator");
+const {
+  ACTIVE_BAND_FILTER,
+  findActiveBandsOf,
+} = require("../../band/utils/soft-delete");
 
 module.exports = createCoreController("api::song.song", ({ strapi }) => ({
   async parseHolychords(ctx) {
@@ -53,13 +57,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
       return { data: [] };
     }
 
-    const populatedUser = await strapi.entityService.findOne(
-      'plugin::users-permissions.user',
-      ctx.state.user.id,
-      { populate: { bands: { fields: ['id', 'name'] } } }
-    );
-
-    const bands = populatedUser?.bands ?? [];
+    const bands = await findActiveBandsOf(strapi, ctx.state.user.id);
 
     if (bands.length === 0) {
       return { data: [] };
@@ -102,7 +100,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
 
     // Отримуємо всі гурти, пов'язані з поточною церквою
     const bands = await strapi.entityService.findMany('api::band.band', {
-      filters: bandFilters,
+      filters: { ...bandFilters, ...ACTIVE_BAND_FILTER },
     });
 
     // За допомогою Promise.all виконуємо паралельний запит для кожного гурту, щоб отримати пісні

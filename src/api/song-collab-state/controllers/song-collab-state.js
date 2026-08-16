@@ -2,6 +2,7 @@
 
 const { createCoreController } = require('@strapi/strapi').factories;
 const { NotFoundError, ValidationError } = require('@strapi/utils').errors;
+const { findActiveBandIdsOf } = require('../../band/utils/soft-delete');
 
 const UID = 'api::song-collab-state.song-collab-state';
 const SONG_UID = 'api::song.song';
@@ -118,7 +119,6 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     const user = await strapi.entityService.findOne(
       'plugin::users-permissions.user',
       userId,
-      { populate: ['bands'] },
     );
 
     if (!user) {
@@ -127,7 +127,8 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
 
     // Документ collab іменується `song:<id>` і гурта в собі не несе, тому
     // доступ рахуємо від усіх гуртів юзера: пісня має належати одному з них.
-    const userBandIds = (user.bands ?? []).map((band) => band.id);
+    // Видалений гурт сюди не потрапляє — редактор його пісень не відкриє.
+    const userBandIds = await findActiveBandIdsOf(strapi, user.id);
     if (userBandIds.length === 0) {
       return { allowed: false, user: { id: user.id, name: user.username } };
     }

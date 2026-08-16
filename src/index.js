@@ -11,6 +11,10 @@ const PUBLIC_AUTHENTICATED_ACTIONS = [
   'api::band.band.bandMembers',
   // Головний екран — список гуртів юзера.
   'api::band.band.myBands',
+  // Створення гурту (автор стає лідером).
+  'api::band.band.createBand',
+  // Видалення гурту = архівація (лише лідер, політика `is-band-leader`).
+  'api::band.band.archiveBand',
   // Пісні гурту.
   'api::song.song.bandSongs',
   'api::song.song.findOneBandSong',

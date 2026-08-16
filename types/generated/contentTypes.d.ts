@@ -383,7 +383,18 @@ export interface ApiBandBand extends Schema.CollectionType {
     createdAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::band.band', 'oneToOne', 'admin::user'> &
       Attribute.Private;
+    deletedAt: Attribute.DateTime;
+    guests: Attribute.Relation<
+      'api::band.band',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     hidden: Attribute.Boolean & Attribute.DefaultTo<false>;
+    leader: Attribute.Relation<
+      'api::band.band',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     lists: Attribute.Relation<'api::band.band', 'oneToMany', 'api::list.list'>;
     name: Attribute.String;
     songs: Attribute.Relation<'api::band.band', 'oneToMany', 'api::song.song'>;
@@ -456,6 +467,7 @@ export interface ApiListList extends Schema.CollectionType {
       Attribute.Private;
     date: Attribute.Date;
     songs: Attribute.Relation<'api::list.list', 'oneToMany', 'api::song.song'>;
+    title: Attribute.String;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
       Attribute.Private;
@@ -966,6 +978,16 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    guestBands: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::band.band'
+    >;
+    ledBands: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::band.band'
+    >;
     password: Attribute.Password &
       Attribute.Private &
       Attribute.SetMinMaxLength<{

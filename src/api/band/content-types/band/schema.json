@@ -27,6 +27,18 @@
       "target": "plugin::users-permissions.user",
       "mappedBy": "bands"
     },
+    "leader": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "ledBands"
+    },
+    "guests": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "guestBands"
+    },
     "lists": {
       "type": "relation",
       "relation": "oneToMany",
@@ -42,6 +54,9 @@
     "hidden": {
       "type": "boolean",
       "default": false
+    },
+    "deletedAt": {
+      "type": "datetime"
     },
     "audioHostUserId": {
       "type": "integer"
