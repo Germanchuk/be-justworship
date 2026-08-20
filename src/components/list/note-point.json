@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_list_note_points",
+  "info": {
+    "displayName": "Примітка",
+    "icon": "message",
+    "description": "Пункт служіння: рядок тексту для гурту («після цієї — молитва»). Належить лише цьому списку. Ознака «звучить» робить примітку програшем: у зібранні під неї крутиться луп, а сам текст стає його підписом. Третього типу пункту немає — програш це саме ця ознака."
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "sounding": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

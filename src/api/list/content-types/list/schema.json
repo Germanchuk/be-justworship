@@ -23,6 +23,14 @@
       "relation": "oneToMany",
       "target": "api::song.song"
     },
+    "points": {
+      "type": "dynamiczone",
+      "components": [
+        "list.song-point",
+        "list.note-point",
+        "list.interlude-point"
+      ]
+    },
     "band": {
       "type": "relation",
       "relation": "manyToOne",

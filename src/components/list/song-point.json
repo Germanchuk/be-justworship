@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_list_song_points",
+  "info": {
+    "displayName": "Пісня",
+    "icon": "music",
+    "description": "Пункт служіння: пісня з бібліотеки гурту. Посилання — справжня реляція, тож перейменування підхоплюється саме собою."
+  },
+  "options": {},
+  "attributes": {
+    "song": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::song.song"
+    }
+  }
+}

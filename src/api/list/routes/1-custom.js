@@ -37,6 +37,21 @@ module.exports = {
       },
     },
     {
+      // Режим зібрання: список разом із вмістом усіх його пісень, одним
+      // запитом. Окремий ендпоінт, бо звичайне читання списку вміст пісень не
+      // тягне — він потрібен лише тут.
+      method: "GET",
+      path: "/bands/:bandId/lists/:listId/gathering",
+      handler: "list.gathering",
+      config: {
+        policies: [
+          "global::is-authenticated",
+          "global::has-band-access",
+          "api::list.is-list-related-to-band",
+        ],
+      },
+    },
+    {
       method: "POST",
       path: "/bands/:bandId/lists",
       handler: "list.customCreate",

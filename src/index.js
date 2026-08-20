@@ -32,6 +32,8 @@ const PUBLIC_AUTHENTICATED_ACTIONS = [
   'api::list.list.customCreate',
   'api::list.list.customUpdate',
   'api::list.list.customDelete',
+  // Режим зібрання — список разом із вмістом усіх його пісень.
+  'api::list.list.gathering',
 ];
 
 module.exports = {
