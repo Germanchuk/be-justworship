@@ -31,26 +31,27 @@
  * Тому для віддаленої бази нижче стоїть перевірка: немає таблиць зони —
  * значить бекенд там ще старий, і скрипт не запускається.
  *
- * ⚠️ БАЗА ЗА ЗАМОВЧУВАННЯМ — НЕ ЛОКАЛЬНА і НЕ ПРЕПРОД. Активний
- * `be-justworship/.env` веде в особисту dev-базу `neondb`. Ціль задається
- * явно:
- *
- *   локальний докер   `local/with-env.sh` (через `make`)
- *   препрод           `--env-file .env.predb`  ⚠️ вимагає піднятого тунеля:
- *                     cloudflared access tcp --hostname predb.justworship.uk \
- *                       --url 127.0.0.1:5432
- *   прод              `--env-file .env.prod`
+ * ⚠️ БАЗА ЗА ЗАМОВЧУВАННЯМ — НЕ ЛОКАЛЬНА. `be-justworship/.env` вказує на
+ * препрод (див. `README.local.md`), і саме він читається, коли `--env-file`
+ * не заданий. Локальні значення накладає `local/with-env.sh`, і саме через
+ * нього треба ходити, коли ціль локальна.
  *
  * Використання (з кореня репозиторію):
  *   make list-points          # локально, dry-run
  *   make list-points-apply    # локально, запис
  *
  * Не локально — запис вимагає явного `--remote`:
- *   cd be-justworship && node scripts/backfill-list-points.js --env-file .env.predb
- *   cd be-justworship && node scripts/backfill-list-points.js --env-file .env.predb --apply --remote
+ *   cd be-justworship && node scripts/backfill-list-points.js               # препрод, dry-run
+ *   cd be-justworship && node scripts/backfill-list-points.js --apply --remote
  *   cd be-justworship && node scripts/backfill-list-points.js --env-file .env.prod --apply --remote
  */
 
+/**
+ * Env читаємо САМІ й одразу. Strapi прочитав би `.env` теж, але значно
+ * пізніше — а нам треба знати ціль ДО того, як щось робити: і рядок `DB:`, і
+ * обидві перевірки нижче стоять перед підйомом застосунку.
+ */
+require('dotenv').config();
 const _envIdx = process.argv.indexOf('--env-file');
 if (_envIdx !== -1) {
   require('dotenv').config({ path: process.argv[_envIdx + 1], override: true });
@@ -84,11 +85,9 @@ const ZONE_TABLE = 'components_list_song_points';
  * мовчки привів у чужу базу. Рядок `DB:` нижче про це казав, але на нього
  * можна не подивитись — тож не-локальна база вимагає сказати це вголос.
  *
- * ⚠️ ПО ОДНОМУ ГОСТУ ЛОКАЛЬНІСТЬ НЕ ВИЗНАЧАЄТЬСЯ. Препрод ходить через тунель
- * (`cloudflared access tcp`), тобто теж лежить на `127.0.0.1` — і за самим
- * лише хостом проскочив би повз обидві перевірки нижче. Розрізняє їх ІМʼЯ
- * БАЗИ: докер — `justworship`, препрод — `just-worship-pre`, прод —
- * `just-worship-prod`, особиста dev-база — `neondb`.
+ * По одному лише хосту локальність не визначається: на `127.0.0.1` може
+ * слухати й чужа база (той самий brew-постгрес на 5432). Тому «локальна» —
+ * це саме докер з `local/local.env`: петльовий хост І імʼя `justworship`.
  */
 const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost', '::1']);
 const DOCKER_DB_NAME = 'justworship';
