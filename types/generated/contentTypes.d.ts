@@ -466,6 +466,9 @@ export interface ApiListList extends Schema.CollectionType {
     createdBy: Attribute.Relation<'api::list.list', 'oneToOne', 'admin::user'> &
       Attribute.Private;
     date: Attribute.Date;
+    points: Attribute.DynamicZone<
+      ['list.song-point', 'list.note-point', 'list.interlude-point']
+    >;
     songs: Attribute.Relation<'api::list.list', 'oneToMany', 'api::song.song'>;
     title: Attribute.String;
     updatedAt: Attribute.DateTime;

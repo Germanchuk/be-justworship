@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_list_interlude_points",
+  "info": {
+    "displayName": "Програш",
+    "icon": "seed",
+    "description": "Пункт служіння: перехід між піснями, що звучить, поки говорить ведучий. Порожній custom означає «рахувати за сусідами» — саме тому поле не обов'язкове."
+  },
+  "options": {},
+  "attributes": {
+    "custom": {
+      "type": "text"
+    }
+  }
+}

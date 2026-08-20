@@ -8,9 +8,19 @@ module.exports = async (ctx, config, { strapi }) => {
     throw new NotFoundError("No listId provided in the route.");
   }
 
-  // Шукаємо список за його ID
+  // Шукаємо список за його ID.
+  //
+  // Populate тут заданий ОБ'ЄКТОМ, а не масивом із запиту: динамічну зону
+  // `points` треба populate-ити вглиб (компоненти + пісня всередині), а масив
+  // цього не виражає. Клієнт нічого не втрачає — усе, що він просив, і так
+  // перелічене нижче.
   const list = await strapi.entityService.findOne("api::list.list", listId, {
-    populate: [...(ctx.request?.query?.populate ?? []), "band", "songs"], // Можна коротше, якщо треба лише band
+    populate: {
+      band: true,
+      // Застаріла реляція; лишається джерелом міграції для препроду й проду.
+      songs: true,
+      points: { populate: "*" },
+    },
   });
 
   // Якщо такого списку немає, або він не належить гурту з URL, повертаємо 404
