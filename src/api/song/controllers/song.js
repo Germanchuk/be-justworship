@@ -160,32 +160,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
 
     return ctx.send({ message: 'Deleted successfully', data: deletedEntity });
   },
-  async copySong(ctx) {
-    const song = ctx.state.song;
-    const bandId = ctx.state.bandId;
-
-
-    const originalSong = await strapi.entityService.findOne('api::song.song', song.id, {
-      populate: '*',
-    });
-
-    const name = await generateUniqueName(originalSong.name, ctx, strapi);
-
-    // Видаляємо поля, які автоматично створюються або мають бути унікальними
-    const { id: originalId, createdAt, updatedAt, updatedBy, createdBy, publishedAt, ...songData } = originalSong;
-
-    // Створюємо нову пісню з отриманими даними
-    const newSong = await strapi.entityService.create('api::song.song', {
-      data: {
-        ...songData,
-        owner: bandId,
-        name
-      },
-    });
-
-    // Повертаємо копію пісні у відповіді
-    return {
-      data: newSong
-    };
-  },
+  // Тимчасово вимкнено: копія з `populate: '*'` забирала в оригіналу
+  // one-to-one `song_collab_state` разом з примітками (пісня 208, 2026-09-19).
+  copySong: () => null,
 }));
