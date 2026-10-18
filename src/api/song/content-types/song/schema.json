@@ -37,11 +37,6 @@
       ],
       "default": "C"
     },
-    "sections": {
-      "type": "component",
-      "repeatable": true,
-      "component": "song.song-section"
-    },
     "owner": {
       "type": "relation",
       "relation": "manyToOne",

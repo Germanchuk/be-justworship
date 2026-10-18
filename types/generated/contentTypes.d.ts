@@ -550,7 +550,6 @@ export interface ApiSongSong extends Schema.CollectionType {
     lastCollabSavedAt: Attribute.DateTime;
     name: Attribute.String;
     owner: Attribute.Relation<'api::song.song', 'manyToOne', 'api::band.band'>;
-    sections: Attribute.Component<'song.song-section', true>;
     slate: Attribute.JSON;
     song_collab_state: Attribute.Relation<
       'api::song.song',
