@@ -148,7 +148,7 @@ module.exports = createCoreController("api::song.song", ({ strapi }) => ({
       data: {
         ...songData
       },
-      populate: ["sections", ...(ctx?.query?.populate ?? [])],
+      populate: ctx?.query?.populate ?? [],
     });
 
     return { data: updatedSong };
