@@ -25,6 +25,9 @@
     },
     "version": {
       "type": "integer"
+    },
+    "linesState": {
+      "type": "text"
     }
   }
 }

@@ -10,7 +10,7 @@ const SONG_UID = 'api::song.song';
 async function findStateBySong(strapi, songId) {
   const results = await strapi.entityService.findMany(UID, {
     filters: { song: { id: songId } },
-    fields: ['id', 'state', 'version'],
+    fields: ['id', 'state', 'linesState', 'version'],
     limit: 1,
   });
   return results[0] || null;
@@ -34,9 +34,13 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
 
     const existing = await findStateBySong(strapi, songId);
 
+    // `linesState` — документ пісні в новій моделі (рядки з маркерами,
+    // кімната `lines:<id>`); `state` — старий документ Slate (`song:<id>`),
+    // після переходу лише для читання. Collab сам вирішує, що з них брати.
     if (existing) {
       return {
         state: existing.state,
+        linesState: existing.linesState ?? null,
         version: existing.version ?? 0,
         fallbackSlate: null,
         fallbackMeta,
@@ -45,6 +49,7 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
 
     return {
       state: null,
+      linesState: null,
       version: 0,
       fallbackSlate: song.slate ?? null,
       fallbackMeta,
@@ -56,6 +61,7 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     const body = ctx.request.body || {};
     const {
       state,
+      linesState,
       version,
       slate,
       slateFull,
@@ -65,8 +71,9 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
       timeSignature,
     } = body;
 
-    if (typeof state !== 'string' || state.length === 0) {
-      throw new ValidationError('state must be a non-empty base64 string');
+    const isLines = typeof linesState === 'string' && linesState.length > 0;
+    if (!isLines && (typeof state !== 'string' || state.length === 0)) {
+      throw new ValidationError('state or linesState must be a non-empty base64 string');
     }
 
     const song = await strapi.entityService.findOne(SONG_UID, songId, {
@@ -87,8 +94,8 @@ module.exports = createCoreController(UID, ({ strapi }) => ({
     // копія на випадок, якщо Yjs-стан зіпсується — джерело правди лишається
     // `state`. Пропущений/некоректний `slateFull` не затирає попередній:
     // краще трохи застаріла копія, ніж жодної.
-    const stateData = { state, version: nextVersion };
-    if (Array.isArray(slateFull)) stateData.slateFull = slateFull;
+    const stateData = isLines ? { linesState, version: nextVersion } : { state, version: nextVersion };
+    if (!isLines && Array.isArray(slateFull)) stateData.slateFull = slateFull;
 
     const saved = existing
       ? await strapi.entityService.update(UID, existing.id, { data: stateData })

@@ -93,21 +93,17 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
     return { data: { ...list, points: readPoints(list) } };
   },
   /**
-   * Усе служіння одним запитом: пункти списку плюс ВМІСТ кожної пісні.
+   * Усе служіння одним запитом: пункти списку плюс ДОКУМЕНТ кожної пісні.
    *
-   * Чому вміст береться зі `slateFull`, а не з `song.slate`: публічна колонка
-   * навмисне знеособлена (`sanitizeSnapshot` у collab-сервісі вирізає з неї
-   * капо, згорнуті секції, фільтри показу й примітки). Саме ці налаштування
-   * гурт і хоче бачити на зібранні — «як налаштували на репетиції». Тому
-   * джерело тут — повна копія документа, яку collab тримає поруч зі своїм
-   * станом.
+   * Документ — повний стан моделі пісні (`linesState`, base64 Yjs), з
+   * особистим (капо, сховані доріжки, особиста динаміка) і примітками: саме
+   * ці налаштування гурт і хоче бачити на зібранні — «як налаштували на
+   * репетиції». Клієнт читає його тією самою моделлю, що й редактор, а
+   * приватне фільтрує так само, як у пісні.
    *
-   * Свіжість: `slateFull` пишеться при збереженні collab-документа, тобто
-   * відстає від живої правки щонайбільше на її дебаунс. Для служіння цього
-   * досить — зібрання свідомо показує знімок, а не редагується наживо.
-   *
-   * Пісня, яку ще жодного разу не відкривали в новому редакторі, свого
-   * collab-стану не має — для неї лишається `song.slate`.
+   * Свіжість: стан пишеться при збереженні collab-документа, тобто відстає
+   * від живої правки щонайбільше на її дебаунс. Для служіння цього досить —
+   * зібрання свідомо показує знімок, а не редагується наживо.
    */
   async gathering(ctx) {
     const list = ctx.state.list;
@@ -117,37 +113,22 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
       .filter((point) => point.__component === SONG_POINT)
       .map((point) => point.song.id);
 
-    const contentBySong = new Map();
+    const stateBySong = new Map();
 
     if (songIds.length > 0) {
       const states = await strapi.entityService.findMany(
         'api::song-collab-state.song-collab-state',
         {
           filters: { song: { id: { $in: songIds } } },
-          fields: ['id', 'slateFull'],
+          fields: ['id', 'linesState'],
           populate: { song: { fields: ['id'] } },
           limit: -1,
         }
       );
 
       for (const state of states) {
-        if (state.song && Array.isArray(state.slateFull)) {
-          contentBySong.set(String(state.song.id), state.slateFull);
-        }
-      }
-
-      // Фолбек для немігрованих пісень — по одній, лише для тих, кого бракує.
-      const missing = songIds.filter((id) => !contentBySong.has(String(id)));
-      if (missing.length > 0) {
-        const songs = await strapi.entityService.findMany('api::song.song', {
-          filters: { id: { $in: missing } },
-          fields: ['id', 'slate'],
-          limit: -1,
-        });
-        for (const song of songs) {
-          if (Array.isArray(song.slate)) {
-            contentBySong.set(String(song.id), song.slate);
-          }
+        if (state.song && typeof state.linesState === 'string') {
+          stateBySong.set(String(state.song.id), state.linesState);
         }
       }
     }
@@ -159,7 +140,7 @@ module.exports = createCoreController('api::list.list', ({ strapi }) => ({
         title: list.title,
         points: points.map((point) =>
           point.__component === SONG_POINT
-            ? { ...point, slate: contentBySong.get(String(point.song.id)) ?? null }
+            ? { ...point, linesState: stateBySong.get(String(point.song.id)) ?? null }
             : point
         ),
       },
