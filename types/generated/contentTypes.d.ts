@@ -496,6 +496,7 @@ export interface ApiSongCollabStateSongCollabState
       'admin::user'
     > &
       Attribute.Private;
+    linesState: Attribute.Text;
     slateFull: Attribute.JSON;
     song: Attribute.Relation<
       'api::song-collab-state.song-collab-state',
